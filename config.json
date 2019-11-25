@@ -1,0 +1,27 @@
+{
+  "mode": "write",
+  "publicKey": "poop",
+  "network":[
+    {
+      "name": "Jakob Haiman\u2019s iPhone",
+      "password": "jakobhaiman"
+    },
+    {
+      "name": "wifi5",
+      "password": "comonitski"
+    },
+    {
+      "name": "ARRIS-0D69",
+      "password": "2W499E601501"
+    }
+  ],
+  "adafruit":{
+    "AIO_SERVER": "io.adafruit.com",
+    "AIO_PORT": 1883,
+    "AIO_USER": "TeamJoint",
+    "AIO_KEY": "a5ec61d4fa7c457c8b6829041443db13",
+    "AIO_CONTROL_FEED": "TeamJoint/feeds/lights",
+    "AIO_RANDOMS_FEED": "TeamJoint/feeds/movement",
+    "last_random_sent_ticks": 0
+  }
+}
