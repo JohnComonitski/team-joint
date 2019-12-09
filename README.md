@@ -1,6 +1,6 @@
 # TeamJoint
-this code is meant to be run an Pycom LoPy4 with a Pytrack shield. The purpose
-of this code is to measure a users joint movement constantly following joint
+This code is meant to be run an Pycom LoPy4 with a Pytrack shield. The purpose
+of this code is to constantly measure a users joint movement following joint
 arthroplasty. This code was created as part of a capstone project at The
 Pennsylvania State University in partnership with Hershey Medical Center. This
 code was written by John Comonitski while working as a member of TeamJoint.
