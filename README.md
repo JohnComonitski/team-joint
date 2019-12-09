@@ -22,10 +22,15 @@ The mode can be changed in the config.json file
 Data collected by the device can be encrypted to ensure user/patient data is
 private. This done using a public and private key. The are expected to be .pem
 files
+
 Public and private keys are generate using these OpenSSl commands:
+
 $ openssl genrsa -des3 -out private.pem 2048
+
 $ openssl rsa -in private.pem -outform PEM -pubout -out public.pem
+
 $ openssl rsa -in private.pem -out private_unencrypted.pem -outform PEM
+
 When setting up the device, the public key may be saved onto the sd card,
 however only put the private key on the sd card when decrypting data and should
 be removed once done. Keep the private key private to ensure user data is
@@ -48,8 +53,12 @@ It sends data at a rate of once every 2 seconds.
 ## LED
 The LoPy 4 features an LED. We use this LED to indicate the board is running and
 what mode it is currently running.
+
 Color: Green - writing data
+
 Color: Blue - connected to Adafruit.io
+
 Color: Red - Decrypting data (blue once complete)
+
 When using this device for long term patient test, it may be advised to turn off
 the LED to save battery.
