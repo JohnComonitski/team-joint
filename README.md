@@ -7,10 +7,15 @@ code was written by John Comonitski while working as a member of TeamJoint.
 
 ## Modes
 The device features 4 modes. They are:
+
 Mode: "write" prints data to disk
+
 Mode: "Ewrite" prints encrypted data to disk
+
 Mode: "adafruit" publishes data to adafruitIO
+
 Mode: "decrypt" Will decrypt data if given private key
+
 The mode can be changed in the config.json file
 
 ## Encryption
