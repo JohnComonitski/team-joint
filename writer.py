@@ -31,7 +31,7 @@ class writer:
             angle = str(self.sensor.getAngle())
             coords = self.sensor.getGPS()
             Time = utime.localtime(None)
-            currentTime = str(Time[1]) +"-"+ str(Time[2]) +"-"+ str(Time[0]) +"-" +str(Time[3])+":"+str(Time[4])+":"+str(Time[5])
+            currentTime = str(Time[0]) +","+ str(Time[1]) +","+ str(Time[2]) +"," +str(Time[3])+","+str(Time[4])+","+str(Time[5])+","
 
             data = currentTime + "," + angle + "," + str(coords[0]) + "," + str(coords[1])
             f = open('/sd/moveData.txt', 'a')
