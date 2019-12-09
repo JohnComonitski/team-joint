@@ -1,6 +1,6 @@
 {
   "mode": "write",
-  "publicKey": "poop",
+  "frequency": 2,
   "network":[
     {
       "name": "Jakob Haiman\u2019s iPhone",
@@ -25,3 +25,4 @@
     "last_random_sent_ticks": 0
   }
 }
+
