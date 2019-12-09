@@ -7,9 +7,10 @@ import time
 
 
 class adafruit:
-    def __init__(self, config, data_collector):
+    def __init__(self, config, data_collector, logger):
         self.sensor = data_collector
         self.Config = config
+        self.Logger = logger
         self.AIO_SERVER = config["adafruit"]["AIO_SERVER"]
         self.AIO_PORT = config["adafruit"]["AIO_PORT"]
         self.AIO_USER = config["adafruit"]["AIO_USER"]
@@ -20,45 +21,49 @@ class adafruit:
         self.last_random_sent_ticks = config["adafruit"]["last_random_sent_ticks"]
 
         """Finding and connecting to network"""
-        wlan = WLAN(mode=WLAN.STA)
-        nets = wlan.scan()
+        self.wlan = WLAN(mode=WLAN.STA)
+        nets = self.wlan.scan()
         print("Scanning for Wifi")
         for net in nets:
             for knowNet in self.Config["network"]:
                 if net.ssid == knowNet["name"]:
                     print(net.ssid + ' found!')
-                    wlan.connect(net.ssid, auth=(net.sec, knowNet["password"]), timeout=5000)
-                    while not wlan.isconnected():
+                    self.wlan.connect(net.ssid, auth=(net.sec, knowNet["password"]), timeout=5000)
+                    while not self.wlan.isconnected():
                         machine.idle() # save power while waiting
                     print('WLAN connection succeeded!')
                     break
 
+        self.client = MQTTClient(self.AIO_CLIENT_ID, self.AIO_SERVER, self.AIO_PORT, self.AIO_USER, self.AIO_KEY)
+
+
 
     def runAdafruit(self):
-        #Uses the MQTT protocol to connect to Adafruit IO
-        client = MQTTClient(self.AIO_CLIENT_ID, self.AIO_SERVER, self.AIO_PORT, self.AIO_USER, self.AIO_KEY)
-
+        time = str(Time[1]) + "/"  + str(Time[2]) + "/" + str(Time[0]) + " at " + str(Time[3]) + ":" + str(Time[4]) + ":" + str(Time[5])
+        self.Logger.log("Session began at " + time)
         #Subscribed messages will be delivered to this callback
-        client.set_callback(self.sub_cb)
-        client.connect()
-        client.subscribe(self.AIO_CONTROL_FEED)
+        self.client.set_callback(self.sub_cb)
+        print('Connecting to io.adafruit.com')
+        time.sleep(10)
+        self.client.connect()
+        self.client.subscribe(self.AIO_CONTROL_FEED)
         print("Connected to %s, subscribed to %s topic" % (self.AIO_SERVER, self.AIO_CONTROL_FEED))
 
-        #Changes light to green to indicate connected to Adafruit
-        pycom.rgbled(0x00ff00)
 
-        try:                      # Code between try: and finally: may cause an error
-                                  # so ensure the client disconnects the server if
-                                  # that happens.
-            while 1:              # Repeat this loop forever
-                client.check_msg()# Action a message if one is received. Non-blocking.
-                sendMovement()     # Send a random number to Adafruit IO if it's time.
-        finally:                  # If an exception is thrown ...
-            client.disconnect()   # ... disconnect the client and clean up.
-            client = None
-            wlan.disconnect()
-            wlan = None
-            pycom.rgbled(0x000022)# Status blue: stopped
+        pycom.rgbled(0x0000FF)  # Blue
+
+        try:
+
+
+            while 1:
+                self.client.check_msg()
+                self.sendMovement()
+        finally:
+            self.client.disconnect()
+            self.client = None
+            self.wlan.disconnect()
+            self.wlan = None
+            pycom.rgbled(0x000022)
             print("Disconnected from Adafruit IO.")
 
     #responds to messages from Adafruit IO
@@ -78,12 +83,13 @@ class adafruit:
             return;
 
         angle = self.sensor.getAngle()
-        velocity = self.sensor.getVelocity()
+        velocity = self.sensor.getAcceleration()
         print("Publishing: {0} to {1} ... ".format(angle, self.AIO_RANDOMS_FEED), end='')
         try:
-            client.publish(topic=self.AIO_RANDOMS_FEED, msg=str(angle))
+            self.client.publish(topic=self.AIO_RANDOMS_FEED, msg=str(angle))
             print("DONE")
         except Exception as e:
+            print(e)
             print("FAILED")
         finally:
             self.last_random_sent_ticks = time.ticks_ms()
