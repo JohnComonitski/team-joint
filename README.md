@@ -37,8 +37,8 @@ be removed once done. Keep the private key private to ensure user data is
 secure.
 
 ## Networking
-The device requires wifi to set the internal clock. Networks can be added in
-the config.json
+The device requires wifi to set the internal clock. If there is no internet connection
+available, the time will be set to 1/1/1970. Networks can be added in the config.json
 
 ## Data Collection Speed
 The number of measurements per second can be adjusted by altering the
@@ -50,7 +50,7 @@ This mode sends live data to Adafuit.io. It is currently configure for our
 personal TeamJoint dashboard. Those settings can be changed in the congfig.json.
 It sends data at a rate of once every 2 seconds.
 
-## LED
+## LED Meaning
 The LoPy 4 features an LED. We use this LED to indicate the board is running and
 what mode it is currently running.
 
