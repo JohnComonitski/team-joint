@@ -1,5 +1,5 @@
 {
-  "mode": "write",
+  "mode": "adafruit",
   "frequency": 2,
   "network":[
     {
@@ -21,8 +21,10 @@
     "AIO_USER": "TeamJoint",
     "AIO_KEY": "a5ec61d4fa7c457c8b6829041443db13",
     "AIO_CONTROL_FEED": "TeamJoint/feeds/lights",
-    "AIO_RANDOMS_FEED": "TeamJoint/feeds/movement",
-    "last_random_sent_ticks": 0
+    "AIO_MOVEMENT_FEED": "TeamJoint/feeds/movement",
+    "AIO_ACCELERATION_FEED": "TeamJoint/feeds/Acceleration",
+    "AIO_GPS_FEED": "TeamJoint/feeds/gps/csv",
+    "last_random_sent_ticks": 0,
+    "post_per_minute":60
   }
 }
-
