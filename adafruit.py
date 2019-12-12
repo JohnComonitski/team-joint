@@ -4,6 +4,7 @@ import ubinascii
 import machine
 import pycom
 import time
+import utime
 
 
 class adafruit:
@@ -17,8 +18,11 @@ class adafruit:
         self.AIO_KEY = config["adafruit"]["AIO_KEY"]
         self.AIO_CLIENT_ID = ubinascii.hexlify(machine.unique_id())
         self.AIO_CONTROL_FEED = config["adafruit"]["AIO_CONTROL_FEED"]
-        self.AIO_RANDOMS_FEED = config["adafruit"]["AIO_RANDOMS_FEED"]
+        self.AIO_MOVEMENT_FEED = config["adafruit"]["AIO_MOVEMENT_FEED"]
+        self.AIO_GPS_FEED = config["adafruit"]["AIO_GPS_FEED"]
+        self.AIO_ACCELERATION_FEED = config["adafruit"]["AIO_ACCELERATION_FEED"]
         self.last_random_sent_ticks = config["adafruit"]["last_random_sent_ticks"]
+        self.post_per_minute = config["adafruit"]["post_per_minute"]
 
         """Finding and connecting to network"""
         self.wlan = WLAN(mode=WLAN.STA)
@@ -39,8 +43,9 @@ class adafruit:
 
 
     def runAdafruit(self):
-        time = str(Time[1]) + "/"  + str(Time[2]) + "/" + str(Time[0]) + " at " + str(Time[3]) + ":" + str(Time[4]) + ":" + str(Time[5])
-        self.Logger.log("Session began at " + time)
+        Time = utime.localtime(None)
+        currentTime = str(Time[1]) + "/"  + str(Time[2]) + "/" + str(Time[0]) + " at " + str(Time[3]) + ":" + str(Time[4]) + ":" + str(Time[5])
+        self.Logger.log("Session began at " + currentTime)
         #Subscribed messages will be delivered to this callback
         self.client.set_callback(self.sub_cb)
         print('Connecting to io.adafruit.com')
@@ -53,8 +58,6 @@ class adafruit:
         pycom.rgbled(0x0000FF)  # Blue
 
         try:
-
-
             while 1:
                 self.client.check_msg()
                 self.sendMovement()
@@ -79,14 +82,23 @@ class adafruit:
     #Sends messages to Adafuit IO
     def sendMovement(self):
         #Waits 2 seconds to send data to avoid Adadruit IO
-        if ((time.ticks_ms() - self.last_random_sent_ticks) < 2000):
+        if ((time.ticks_ms() - self.last_random_sent_ticks) < (1000/(self.post_per_minute)/60)):
             return;
 
         angle = self.sensor.getAngle()
-        velocity = self.sensor.getAcceleration()
-        print("Publishing: {0} to {1} ... ".format(angle, self.AIO_RANDOMS_FEED), end='')
+        acceleration = self.sensor.getAcceleration()
+        gps = self.sensor.getGPS()
+        if(str(gps[0]) == "None"):
+            gps = "0,40.808679,-77.855693,0"
+        else:
+            gps = "0,"+str(gps[0])+","+str(gps[1])+",0"
+
+
+        print("Publishing: {0} to {1}, {2} to {3}, {4} to {5} ... ".format(angle, self.AIO_MOVEMENT_FEED,acceleration, self.AIO_ACCELERATION_FEED,gps, self.AIO_GPS_FEED), end='')
         try:
-            self.client.publish(topic=self.AIO_RANDOMS_FEED, msg=str(angle))
+            self.client.publish(topic=self.AIO_MOVEMENT_FEED, msg=str(angle))
+            self.client.publish(topic=self.AIO_ACCELERATION_FEED, msg=str(acceleration))
+            self.client.publish(topic=self.AIO_GPS_FEED, msg=str(gps))
             print("DONE")
         except Exception as e:
             print(e)
